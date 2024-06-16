@@ -1,15 +1,11 @@
 # Scraping homework
 
-Your goal is to write code that will scrape RSS content feed from an external publisher that is available under this url address: https://connect.thairath.co.th/ws/kaikai/content/mirror. The resulsts of the scraping should be converted to PublisherContent class and stored in the database.
+Instruction:
 
-Make sure that subsequent scraping runs will not be duplicated. It is not needed to update existing PublisherContents that were stored previously, if the content already exists it can be ignored.
+In this project, the database was made in PostreSQL, which must be installed for the application to work properly.
 
-Make sure to remove links to other articles from the content if there are any.
+Before running the application, create the PostreSQL database so that its name, password and username match those in the
 
-The use of third party libraries is recommended.
+.\src\main\resources\application.properties file. You should change the name, password and username in the application.properties file
 
-Consider implementing unit tests.
-
-Copy this repository and provide us with the link to your version after you're done.
-
-Good luck!
+ to match those in the database.   
