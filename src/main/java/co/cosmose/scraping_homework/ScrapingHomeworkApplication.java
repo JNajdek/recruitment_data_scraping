@@ -28,6 +28,12 @@ public class ScrapingHomeworkApplication implements CommandLineRunner{
 		SpringApplication.run(ScrapingHomeworkApplication.class, args);
 	}
 
+	/**
+	 * Method responsible for scraping RSS content feed from an external publisher and saving it into the database.
+	 * It also removes all links from the <description> elements
+	 * @param args Command-line arguments
+	 * @throws Exception If an error occurs during running of the application
+	 */
 	@Override
 	public void run(String... args) throws Exception {
 
@@ -35,7 +41,6 @@ public class ScrapingHomeworkApplication implements CommandLineRunner{
 		try {
 			Document doc = Jsoup.connect(url).get();
 			Elements items = doc.select("item");
-			//int i=0;
 			for (Element item : items) {
 					String articleUrl = item.select("link").first().text();
 
@@ -54,9 +59,7 @@ public class ScrapingHomeworkApplication implements CommandLineRunner{
 					String htmlContent;
 					if (descriptionElement != null) {
 						originalContent = descriptionElement.text();
-						//we remove link with HTML tags to eliminate image configuration and blank spaces
 						originalContent = removeLinks(originalContent);
-
 						htmlContent = changeToHtml(originalContent);
 					} else {
 						originalContent = "No description";
@@ -83,6 +86,14 @@ public class ScrapingHomeworkApplication implements CommandLineRunner{
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * This method is responsible for removal of the text between specified start and end strings from a given text
+	 * @param text whole text that needs to be trimmed
+	 * @param startStr beginning of the part of the text that needs to be removed
+	 * @param endStr end of the part of the text that needs to be removed
+	 * @return text without removed parts which were in between startStr and endStr
+	 */
 	public static String removeTextBetween(String text, String startStr, String endStr) {
 		String regex = Pattern.quote(startStr) + ".*?" + Pattern.quote(endStr);
 		Pattern pattern = Pattern.compile(regex);
@@ -96,18 +107,27 @@ public class ScrapingHomeworkApplication implements CommandLineRunner{
 
 		return result.toString();
 	}
+
+	/**
+	 * This method removes links to other articles from the text
+	 * @param text provided text containing unwanted links
+	 * @return text without unwanted links
+	 */
 	public static String removeLinks(String text){
 		text = removeTextBetween(text, "&lt;a", "&lt;/a&gt;");
-		text = removeTextBetween(text, "&lt;img src", "&gt;");
-		text = removeTextBetween(text, "&lt;p&gt;https", "&gt;");
-		String regex = "\\b(https?|ftp):\\/\\/[-A-Z0-9+&@#\\/%?=~_|!:,.;]*[-A-Z0-9+&@#\\/%=~_|]";
-		text = text.replaceAll(regex, "");
-		String regex2 = "\\b((https?|ftp):\\/\\/|www\\.)[-A-Z0-9+&@#\\/%?=~_|!:,.;]*[-A-Z0-9+&@#\\/%=~_|]";
-		text = text.replaceAll(regex2, "");
+
+//  The instruction specified the removal of only the links to other articles. If it is required to also remove the links to images, please uncomment the following line.
+//		text = removeTextBetween(text, "&lt;img src", "&gt;");
 		return text;
 	}
+
+	/**
+	 * This method unescapes the originally scraped content back to HTML format
+	 * @param originalContent The content originally scraped from RSS source feed containing escaped HTML characters
+	 * @return content unescaped back to HTML format
+	 */
 	public static String changeToHtml(String originalContent){
-		String htmlContent=new String(originalContent);
+		String htmlContent= originalContent;
 		htmlContent= htmlContent.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&").replaceAll("&quot;","\"").replaceAll("&nbsp;", " ");
 		return htmlContent;
 

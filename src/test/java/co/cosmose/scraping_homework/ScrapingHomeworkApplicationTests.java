@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Integration and unit tests for the ScrapingHomeworkApplication.
+ */
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class ScrapingHomeworkApplicationTests {
@@ -26,24 +29,35 @@ class ScrapingHomeworkApplicationTests {
 	private DataSource dataSource;
 	private UUID testUUID;
 
+	/**
+	 * Tests if context of the application loads successfully.
+	 */
 	@Test
 	void contextLoads() {
 	}
 
 
+	/**
+	 * Tests removing links and unescaping text back to HTML
+	 */
 	@Test
 	public void testRemovingLinksConvertingHtml()  {
+		// Only article links are removed. Image data (with urls) remains
 		String textWithLinks = "<![CDATA[ &lt;p&gt;texttexttext&lt;a href=\"https://mirrorthailand.com/tags/%E0%B9%84%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%A5\" rel=\"noopener noreferrer\" target=\"_blank\"&gt;&lt;/a&gt;texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext&lt;a href=\"https://mirrorthailand.com/tags/%E0%B8%AA%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B9%80%E0%B8%AE%E0%B8%94\" rel=\"noopener noreferrer\" target=\"_blank\"&lt;/a&gt; texttexttexttexttexttext!&lt;/p&gt;&lt;p&gt;&lt;img src=\"https://media.thairath.co.th/image/yob27b1s1a2hys1a2hmXBzb3uT9rg8c3Su83pLLxDPPuBLnF5gMe9vA1.jpg\" data-id=\"101607\" data-url=\"https://media.thairath.co.th/image/yob27b1s1a2hys1a2hmXBzb3uT9rg8c3Su83pLLxDPPuBLnF5gMe9vA1.jpg\" style=\"width: auto;\" class=\"fr-fic fr-dib\"&gt;&lt;/p&gt;";
-		String textToCompare1=  "<![CDATA[ &lt;p&gt;texttexttext texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext  texttexttexttexttexttext!&lt;/p&gt;&lt;p&gt; &lt;/p&gt;";
+		String textToCompare1=  "<![CDATA[ &lt;p&gt;texttexttext texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext  texttexttexttexttexttext!&lt;/p&gt;&lt;p&gt;&lt;img src=\"https://media.thairath.co.th/image/yob27b1s1a2hys1a2hmXBzb3uT9rg8c3Su83pLLxDPPuBLnF5gMe9vA1.jpg\" data-id=\"101607\" data-url=\"https://media.thairath.co.th/image/yob27b1s1a2hys1a2hmXBzb3uT9rg8c3Su83pLLxDPPuBLnF5gMe9vA1.jpg\" style=\"width: auto;\" class=\"fr-fic fr-dib\"&gt;&lt;/p&gt;";;
 		String textWithoutLinks = ScrapingHomeworkApplication.removeLinks(textWithLinks);
 		assertEquals(textWithoutLinks, textToCompare1);
-		String textToCompare2="<![CDATA[ <p>texttexttext texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext  texttexttexttexttexttext!</p><p> </p>";
+		String textToCompare2="<![CDATA[ <p>texttexttext texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext  texttexttexttexttexttext!</p><p><img src=\"https://media.thairath.co.th/image/yob27b1s1a2hys1a2hmXBzb3uT9rg8c3Su83pLLxDPPuBLnF5gMe9vA1.jpg\" data-id=\"101607\" data-url=\"https://media.thairath.co.th/image/yob27b1s1a2hys1a2hmXBzb3uT9rg8c3Su83pLLxDPPuBLnF5gMe9vA1.jpg\" style=\"width: auto;\" class=\"fr-fic fr-dib\"></p>";
 		String textHtml = ScrapingHomeworkApplication.changeToHtml(textWithoutLinks);
 		assertEquals(textHtml, textToCompare2);
 
 	}
 
 
+	/**
+	 * This method tests if there is a correct number of records in the database after running the application
+	 * @throws Exception if there is an error accessing the database
+	 */
 	@Test
 	public void testCountRecordsInDatabase() throws Exception {
 		ScrapingHomeworkApplication application = new ScrapingHomeworkApplication();
@@ -54,6 +68,10 @@ class ScrapingHomeworkApplicationTests {
 		assertEquals(30, count);
 	}
 
+	/**
+	 * Tests if the data is saved correctly into the database. Shown by fetching 3 first records
+	 * @throws SQLException if there is an error accessing the database
+	 */
 	@Test
 	public void testFetchFirstThreeRecords() throws SQLException {
 		ScrapingHomeworkApplication application = new ScrapingHomeworkApplication();
