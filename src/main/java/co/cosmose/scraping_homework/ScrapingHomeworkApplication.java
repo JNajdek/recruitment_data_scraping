@@ -79,8 +79,8 @@ public class ScrapingHomeworkApplication implements CommandLineRunner{
 				}
 			}
 
-			List<PublisherContent> contents = repository.findAll();
-			contents.forEach(System.out::println);
+			//List<PublisherContent> contents = repository.findAll();
+			//contents.forEach(System.out::println);
 
 		} catch (IOException e) {
 			e.printStackTrace();
